@@ -127,13 +127,16 @@ class FlaskLambda(Flask):
             body = next(self.wsgi_app(
                 make_environ(event, context),
                 response.start_response
-            ))
-
-            return {
+            ), None )
+            ret_dict = { 
                 'statusCode': response.status,
-                'headers': response.response_headers,
-                'body': body.decode('utf-8')
+                'headers': response.response_headers
             }
+
+            if body:
+            	ret_dict['body'] = body.decode('utf-8')
+            	
+            return ret_dict
 
         except:
             self.logger.exception('An unexpected exception occured')
